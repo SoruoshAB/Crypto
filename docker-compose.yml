@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  crypto_postgresql:
+    image: postgres:13.3-alpine
+    container_name: postgres
+    volumes:
+      - postgres_vo:/var/lib/postgresql/data
+    restart: always
+    env_file: .env
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres_ne
+
+volumes:
+  postgres_vo:
+    external: true
+
+networks:
+  postgres_ne:
+    external: true
