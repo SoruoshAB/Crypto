@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
 
     "account.apps.AccountConfig",
-
+    "courses.apps.CoursesConfig",
 ]
 
 MIDDLEWARE = [
