@@ -107,7 +107,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, data):
         global phone_otp
         global profile_inviter
-        inviter_code = data.pop('inviter_code')
+        profile_inviter = None
+        inviter_code = data.get('inviter_code')
         if inviter_code:
             profile_inviter = Profile.objects.filter(invite_code=inviter_code).first()
             if not profile_inviter:
@@ -124,7 +125,7 @@ class RegisterSerializer(serializers.ModelSerializer):
                 })
         # here data has all the fields which have validated values
         # so we can create a User instance out of it
-        user = User(**data)
+        user = User(phone=data.get('phone'), password=data.get('password'))
 
         # get the password from the data
         password = data.get('password')
@@ -140,16 +141,17 @@ class RegisterSerializer(serializers.ModelSerializer):
 
         if errors:
             raise serializers.ValidationError(errors)
-
         return super(RegisterSerializer, self).validate(data)
 
     def create(self, validated_data):
+        inviter_code = None
+        if validated_data.get('inviter_code'):
+            inviter_code = validated_data.pop('inviter_code')
         user = User.objects.create_user(**validated_data)
         if profile_inviter:
             print(validated_data)
-            pass
-        user.profile.inviter_code = validated_data['inviter_code']
-        # phone_otp.delete()
+        user.profile.inviter_code = inviter_code
+        phone_otp.delete()
         return user
 
 
@@ -302,7 +304,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
     phone = serializers.CharField(source="user.phone", read_only=True)
-    name = serializers.CharField(max_length=20, required=True)
+    name = serializers.CharField(required=True)
 
     class Meta:
         model = Profile
