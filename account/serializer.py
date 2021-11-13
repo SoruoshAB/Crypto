@@ -320,3 +320,20 @@ class SetInviterCodeSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         inviter_code = data.get("inviter_code")
+
+
+class UserCommentSerializer(serializers.ModelSerializer):
+    phone = serializers.CharField()
+
+    class Meta:
+        model = Profile
+        fields = (
+            # 'image',
+            # 'name',
+            'phone',
+        )
+
+    def to_representation(self, instance):
+        instance.phone = re.sub(r".*?(\d{4})(\d{3})(\d{3})$", r'0\1***\3', instance.phone)
+        instance = super().to_representation(instance)
+        return instance
