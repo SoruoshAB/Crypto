@@ -1,15 +1,9 @@
-import datetime
-from django.utils import timezone
 from rest_framework import status, generics, permissions
-from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from .models import PhoneOTP, User
 from .serializer import *
-
-from .soapAPI import soapapi
 
 
 # Validate Phone for Register user
@@ -18,6 +12,7 @@ class ValidatePhoneRegister(APIView):
     This class view takes phone number and if it doesn't exists already then it sends otp for
     first coming phone numbers
     """
+    permission_classes = [permissions.AllowAny, ]
 
     def post(self, request, *args, **kwargs):
         serializer = ValidatePhoneRegisterSerializer(data=request.data)
@@ -36,6 +31,7 @@ class ValidateOtpRegister(APIView):
     If you have received otp, post a request with phone and that otp and you will be redirected to set the password
 
     """
+    permission_classes = [permissions.AllowAny, ]
 
     def post(self, request, *args, **kwargs):
         serializer = ValidateOtpRegisterSerializer(data=request.data)
@@ -53,6 +49,7 @@ class RegisterApi(APIView):
     """
         This class view takes phone number and password, set a new user
     """
+    permission_classes = [permissions.AllowAny, ]
 
     def post(self, request, *args, **kwargs):
         serializer = RegisterSerializer(data=request.data)
@@ -74,6 +71,7 @@ class ValidatePhoneForgot(APIView):
     """
     Validate if account is there for a given phone number and then send otp for forgot password reset
     """
+    permission_classes = [permissions.AllowAny, ]
 
     def post(self, request, *args, **kwargs):
         serializer = ValidatePhoneForgetSerializer(data=request.data)
@@ -90,6 +88,7 @@ class ValidateOTPForgot(APIView):
     If you have received an otp, post a request with phone and that otp and you will be redirected to reset the
     forgotted password
     """
+    permission_classes = [permissions.AllowAny, ]
 
     def post(self, request, *args, **kwargs):
         serializer = ValidateOtpForgotSerializer(data=request.data)
@@ -108,6 +107,7 @@ class ForgetPasswordChange(APIView):
     if forgot is valid and account exists then only pass otp, phone and password to reset the password. All
     three should match.
     """
+    permission_classes = [permissions.AllowAny, ]
 
     def post(self, request, *args, **kwargs):
         serializer = ForgetPasswordSerializer(data=request.data)
@@ -124,9 +124,7 @@ class ProfileRetrieveUpdate(generics.RetrieveUpdateAPIView):
     """
     take user from Authorization and get profile data , update data
     """
-    permission_classes = [permissions.IsAuthenticated, ]
     serializer_class = ProfileSerializer
 
     def get_object(self):
         return self.request.user.profile
-
